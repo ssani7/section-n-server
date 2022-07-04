@@ -18,12 +18,7 @@ async function run() {
     try {
         await client.connect();
         const userCollection = client.db("section-N").collection("users");
-
-        // app.get("/users", async (req, res) => {
-        //     const cursor = userCollection.find({});
-        //     const result = await cursor.toArray();
-        //     res.send(result);
-        // })
+        const startsCollection = client.db("section-N").collection("stars");
 
         app.put("/users/:email", async (req, res) => {
             const user = req.body;
@@ -32,8 +27,36 @@ async function run() {
                 $set: user
             }
             const result = userCollection.updateOne({ email }, updateDoc, { upsert: true });
+            const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
+            res.send({ result, token });
         })
 
+        app.get('/role/:email', async (req, res) => {
+            const email = req.params.email;
+            const user = await userCollection.findOne({ email });
+            if (user?.role === "admin") {
+                res.send(true);
+            }
+            else {
+                res.send(false);
+            }
+        })
+
+        app.get('/achievements', async (req, res) => {
+            const result = await startsCollection.find({ approved: true }).sort({ _id: -1 }).toArray();
+            res.send(result);
+        })
+
+        app.get('/achievementsReq', async (req, res) => {
+            const result = await startsCollection.find({ approved: false }).sort({ _id: -1 }).toArray();
+            res.send(result);
+        })
+
+        app.post('/achievements', async (req, res) => {
+            const achievement = req.body;
+            const result = await startsCollection.insertOne(achievement);
+            res.send(result);
+        })
     }
 
     finally {
