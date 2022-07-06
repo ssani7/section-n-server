@@ -47,6 +47,11 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/achievementCount', async (req, res) => {
+            const count = await startsCollection.countDocuments();
+            res.send({ count });
+        })
+
         app.get('/achievementsReq', async (req, res) => {
             const result = await startsCollection.find({ approved: false }).sort({ _id: -1 }).toArray();
             res.send(result);
