@@ -1,7 +1,7 @@
 const express = require('express');
 const app = express();
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
@@ -55,6 +55,23 @@ async function run() {
         app.post('/achievements', async (req, res) => {
             const achievement = req.body;
             const result = await startsCollection.insertOne(achievement);
+            res.send(result);
+        })
+
+        app.delete('/achievements/:id', async (req, res) => {
+            const id = req.params;
+            const result = await startsCollection.deleteOne({ _id: ObjectId(id) });
+            res.send(result);
+        })
+
+        app.put('/achievements/:id', async (req, res) => {
+            const id = req.params;
+            const updateDoc = {
+                $set: {
+                    approved: true
+                }
+            }
+            const result = await startsCollection.updateOne({ _id: ObjectId(id) }, updateDoc);
             res.send(result);
         })
     }
