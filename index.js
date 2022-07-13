@@ -19,6 +19,7 @@ async function run() {
         await client.connect();
         const userCollection = client.db("section-N").collection("users");
         const startsCollection = client.db("section-N").collection("stars");
+        const eventsCollection = client.db("section-N").collection("events");
 
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -83,6 +84,17 @@ async function run() {
                 }
             }
             const result = await startsCollection.updateOne({ _id: ObjectId(id) }, updateDoc);
+            res.send(result);
+        })
+
+        app.get('/events', async (req, res) => {
+            const result = await eventsCollection.find().toArray();
+            res.send(result);
+        })
+
+        app.post('/events', async (req, res) => {
+            const event = req.body;
+            const result = await eventsCollection.insertOne(event);
             res.send(result);
         })
     }
