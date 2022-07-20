@@ -20,6 +20,8 @@ async function run() {
         const userCollection = client.db("section-N").collection("users");
         const startsCollection = client.db("section-N").collection("stars");
         const eventsCollection = client.db("section-N").collection("events");
+        const coursesCollection = client.db("section-N").collection("courses");
+        const studentsCollection = client.db("section-N").collection("students");
 
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -54,11 +56,23 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/events', async (req, res) => {
+            const result = await eventsCollection.find().toArray();
+            res.send(result);
+        })
+
         app.get('/achievementCount', async (req, res) => {
             const count = await startsCollection.countDocuments();
             res.send({ count });
         })
 
+        app.get("/matchId/:id", async (req, res) => {
+            const userId = req.params.id;
+            const result = await studentsCollection.findOne({ id: userId });
+            res.send(result);
+        })
+
+        // admin features
         app.get('/achievementsReq', async (req, res) => {
             const result = await startsCollection.find({ approved: false }).sort({ _id: -1 }).toArray();
             res.send(result);
@@ -76,6 +90,7 @@ async function run() {
             res.send(result);
         })
 
+        // approve achievement
         app.put('/achievements/:id', async (req, res) => {
             const id = req.params;
             const updateDoc = {
@@ -87,14 +102,20 @@ async function run() {
             res.send(result);
         })
 
-        app.get('/events', async (req, res) => {
-            const result = await eventsCollection.find().toArray();
-            res.send(result);
-        })
-
+        // post achievement
         app.post('/events', async (req, res) => {
             const event = req.body;
             const result = await eventsCollection.insertOne(event);
+            res.send(result);
+        })
+
+        app.get('/courses', async (req, res) => {
+            const courses = await coursesCollection.find().toArray();
+            res.send(courses);
+        })
+        app.get('/courses/:semesterName', async (req, res) => {
+            const semesterName = req.params.semesterName;
+            const result = await coursesCollection.findOne({ semester: semesterName });
             res.send(result);
         })
     }
