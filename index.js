@@ -66,16 +66,54 @@ async function run() {
             res.send({ count });
         })
 
-        app.get("/matchId/:id", async (req, res) => {
-            const userId = req.params.id;
-            const result = await studentsCollection.findOne({ id: userId });
-            res.send(result);
+        app.get("/verifyUser", async (req, res) => {
+            const userId = req.query.id;
+            const userEmail = req.query.email;
+            const idHolder = await studentsCollection.findOne({ id: userId });
+            const existingUser = await userCollection.find({ id: userId, verification: "verified" }).toArray();
+            const updateDoc = {
+                $set: {
+                    verification: "pending",
+                    id: userId
+                }
+            }
+            if (idHolder) {
+                if (existingUser.length > 0) {
+                    res.send(existingUser);
+                }
+                else {
+                    const reqVerification = await userCollection.updateOne({ email: userEmail }, updateDoc, { upsert: true });
+                    res.send(reqVerification);
+                }
+
+            }
+            else {
+                res.send({ error: "id not matched" });
+            }
+
         })
 
         // admin features
         app.get('/achievementsReq', async (req, res) => {
             const result = await startsCollection.find({ approved: false }).sort({ _id: -1 }).toArray();
             res.send(result);
+        })
+
+        app.get('/verifyReq', async (req, res) => {
+            const result = await userCollection.find({ verification: "pending" }).toArray();
+            res.send(result);
+        })
+
+        // approve verification
+        app.put('/verification/approve/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateDoc = {
+                $set: {
+                    verification: "verified"
+                }
+            }
+            const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+            res.send(result)
         })
 
         app.post('/achievements', async (req, res) => {
