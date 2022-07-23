@@ -56,13 +56,18 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/students', async (req, res) => {
+            const result = await studentsCollection.find().toArray();
+            res.send(result);
+        })
+
         app.get('/events', async (req, res) => {
             const result = await eventsCollection.find().toArray();
             res.send(result);
         })
 
         app.get('/achievementCount', async (req, res) => {
-            const count = await startsCollection.countDocuments();
+            const count = await startsCollection.countDocuments({ approved: true });
             res.send({ count });
         })
 
@@ -113,7 +118,16 @@ async function run() {
                 }
             }
             const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
-            res.send(result)
+            if (result.modifiedCount > 0) {
+                const user = await userCollection.findOne({ _id: ObjectId(id), verification: "verified" });
+                const updateStudent = {
+                    $set: {
+                        userData: user
+                    }
+                }
+                const update = await studentsCollection.updateOne({ id: user.id }, updateStudent, { upsert: true })
+                res.send(update);
+            }
         })
 
         app.post('/achievements', async (req, res) => {
