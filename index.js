@@ -136,6 +136,17 @@ async function run() {
             }
         })
 
+        app.put('/verification/delete/:id', async (req, res) => {
+            const id = req.params.id;
+            const updateDoc = {
+                $set: {
+                    verification: "unverified"
+                }
+            }
+            const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+            res.send(result)
+        })
+
         app.post('/achievements', async (req, res) => {
             const achievement = req.body;
             const result = await startsCollection.insertOne(achievement);
