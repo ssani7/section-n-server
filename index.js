@@ -35,9 +35,26 @@ async function run() {
             const updateDoc = {
                 $set: user
             }
-            const result = userCollection.updateOne({ email }, updateDoc, { upsert: true });
+            const result = await userCollection.updateOne({ email }, updateDoc, { upsert: true });
             const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
             res.send({ result, token });
+        })
+
+        app.put("/updateUser", async (req, res) => {
+            const user = req.body;
+            const id = req.query.id;
+            const studentId = req.query.studentId;
+            const verification = req.query.verification;
+            const updateDoc = {
+                $set: user
+            }
+
+            let result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+
+            if (result.modifiedCount > 0 && verification === "verified") {
+                result = await studentsCollection.updateOne({ id: studentId }, updateDoc, { upsert: true });
+            }
+            res.send(result);
         })
 
         app.delete("/users/:email", async (req, res) => {
