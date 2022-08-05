@@ -121,6 +121,38 @@ async function run() {
 
         })
 
+        // portfolio data
+
+        // app.get('/portfolio', async(req,res)=>{
+        //     const result = await fin
+        // })
+
+        app.post('/portfolio', async (req, res) => {
+            const portfolio = req.body;
+            const id = req.query.id;
+            const verification = req.query.verification;
+            const updateDoc = {
+                $set: {
+                    portfolio: portfolio
+                }
+            }
+            const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+
+            if (result.modifiedCount > 0 && verification == "verified") {
+                const user = await userCollection.findOne({ _id: ObjectId(id), verification: "verified" });
+                const updateStudent = {
+                    $set: {
+                        portfolio: portfolio
+                    }
+                }
+                const update = await studentsCollection.updateOne({ id: user.id }, updateStudent, { upsert: true });
+                res.send(update);
+            }
+            else {
+                res.send({ error: "Not verified" })
+            }
+        })
+
         // admin features
         app.get('/achievementsReq', async (req, res) => {
             const result = await startsCollection.find({ approved: false }).sort({ _id: -1 }).toArray();
