@@ -138,7 +138,13 @@ async function run() {
             }
             const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
 
-            if (result.modifiedCount > 0 && verification == "verified") {
+            if (result.modifiedCount = 0) {
+                res.send({ error: "Nothing Updated" })
+            }
+            else if (verification !== "verified") {
+                res.send({ error: "Not Verrified" });
+            }
+            else {
                 const user = await userCollection.findOne({ _id: ObjectId(id), verification: "verified" });
                 const updateStudent = {
                     $set: {
@@ -147,9 +153,6 @@ async function run() {
                 }
                 const update = await studentsCollection.updateOne({ id: user.id }, updateStudent, { upsert: true });
                 res.send(update);
-            }
-            else {
-                res.send({ error: "Not verified" })
             }
         })
 
