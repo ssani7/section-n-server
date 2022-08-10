@@ -48,13 +48,26 @@ async function run() {
             const updateDoc = {
                 $set: user
             }
+            // let result = { message: "" };
+            await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true }).then(async (response) => {
+                if (response.modifiedCount > 0 && verification === "verified") {
+                    const result = await studentsCollection.updateOne({ id: studentId }, {
+                        $set: {
+                            userData: user
+                        }
 
-            let result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+                    }, { upsert: true });
+                    res.send(response)
+                }
+                else {
+                    res.send(response);
+                }
+            })
 
-            if (result.modifiedCount > 0 && verification === "verified") {
-                result = await studentsCollection.updateOne({ id: studentId }, updateDoc, { upsert: true });
-            }
-            res.send(result);
+            // if (result.modifiedCount > 0 && verification === "verified") {
+            //     result = await studentsCollection.updateOne({ id: studentId }, updateDoc, { upsert: true });
+            // }
+            // res.send(result);
         })
 
         app.delete("/users/:email", async (req, res) => {
@@ -80,7 +93,7 @@ async function run() {
         })
 
         app.get('/students', async (req, res) => {
-            const result = await studentsCollection.find().toArray();
+            const result = await studentsCollection.find().sort({ id: 1 }).toArray();
             res.send(result);
         })
 
@@ -123,8 +136,10 @@ async function run() {
 
         // portfolio data
 
-        // app.get('/portfolio', async(req,res)=>{
-        //     const result = await fin
+        // app.get('/project', async (req, res) => {
+        //     const email = req.query.email;
+        //     const result = await userCollection.findOne({ email });
+        //     console.log(result)
         // })
 
         app.post('/portfolio', async (req, res) => {
