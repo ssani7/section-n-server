@@ -107,7 +107,7 @@ async function run() {
             res.send({ count });
         })
 
-        app.get("/verifyUser", async (req, res) => {
+        app.put("/verifyUser", async (req, res) => {
             const userId = req.query.id;
             const userEmail = req.query.email;
             const idHolder = await studentsCollection.findOne({ id: userId });
@@ -135,12 +135,6 @@ async function run() {
         })
 
         // portfolio data
-
-        // app.get('/project', async (req, res) => {
-        //     const email = req.query.email;
-        //     const result = await userCollection.findOne({ email });
-        //     console.log(result)
-        // })
 
         app.post('/portfolio', async (req, res) => {
             const portfolio = req.body;
