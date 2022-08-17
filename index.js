@@ -22,6 +22,7 @@ async function run() {
         const eventsCollection = client.db("section-N").collection("events");
         const coursesCollection = client.db("section-N").collection("courses");
         const studentsCollection = client.db("section-N").collection("students");
+        const infoCollection = client.db("section-N").collection("info");
 
         app.get('/user/:email', async (req, res) => {
             const email = req.params.email;
@@ -85,6 +86,22 @@ async function run() {
             else {
                 res.send(false);
             }
+        })
+
+        app.get('/routine', async (req, res) => {
+            const result = await infoCollection.findOne({ title: "routine" });
+            res.send(result);
+        })
+
+        app.put('/routine', async (req, res) => {
+            const routineData = req.body;
+            const updateDoc = {
+                $set: {
+                    routineData
+                }
+            }
+            const result = await infoCollection.updateOne({ title: "routine" }, updateDoc, { upsert: true });
+            res.send(result)
         })
 
         app.get('/achievements', async (req, res) => {
