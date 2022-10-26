@@ -46,7 +46,6 @@ const memesCollection = client.db("section-N").collection("memes");
 app.use('/user', userRoutes)
 
 // /routine
-
 app.get('/routine', async (req, res) => {
     const result = await infoCollection.findOne({ title: "routine" });
     res.send(result);
