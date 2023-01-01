@@ -10,6 +10,6 @@ router
 
 router
     .get('/:email', getUser)
-// .put(assignUser)
+    .put('/:email', assignUser)
 
 module.exports = router
