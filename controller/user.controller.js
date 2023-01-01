@@ -38,6 +38,7 @@ module.exports.getUser = async (req, res) => {
 
 }
 
+
 module.exports.assignUser = async (req, res) => {
     try {
         const user = req.body;
@@ -47,7 +48,9 @@ module.exports.assignUser = async (req, res) => {
         }
         const result = await userCollection.updateOne({ email }, updateDoc, { upsert: true });
         const token = jwt.sign(user, process.env.ACCESS_TOKEN, { expiresIn: '1d' });
+
         res.send({ result, token });
+
     } catch (error) {
         console.log(error);
         res.status(400).send({
@@ -55,10 +58,9 @@ module.exports.assignUser = async (req, res) => {
             message: error.message
         })
     }
-
 }
 
-module.exports.updateUser = async (req, res) => {
+module.exports = updateUser = async (req, res) => {
     try {
         const user = req.body;
         delete user?._id
