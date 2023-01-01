@@ -8,8 +8,8 @@ router
     .get('/role/:email', getUserRole)
 // .delete('/:email', deleteUser)
 
-router.route('/:email')
-    .get(getUser)
-    .put(assignUser)
+router
+    .get('/:email', getUser)
+// .put(assignUser)
 
 module.exports = router

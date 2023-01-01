@@ -60,7 +60,7 @@ module.exports.assignUser = async (req, res) => {
     }
 }
 
-module.exports = updateUser = async (req, res) => {
+module.exports.updateUser = async (req, res) => {
     try {
         const user = req.body;
         delete user?._id

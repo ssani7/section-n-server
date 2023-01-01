@@ -10,7 +10,7 @@ router.route('/')
 router
     .get('/requests', getAchRequests)
     .get('/count', getAchCount)
-    .put('/:id', approveAch)
+    // .put('/:id', approveAch)
     .delete('/:id', declineAch)
 
 
