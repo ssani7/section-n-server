@@ -196,7 +196,9 @@ app.get('/courses', async (req, res) => {
 })
 app.get('/courses/:semesterName', async (req, res) => {
     const semesterName = req.params.semesterName;
-    const result = await coursesCollection.findOne({ semester: semesterName });
+    const result = (semesterName === "current")
+        ? await coursesCollection.findOne({}, { sort: { _id: -1 }, limit: 1 })
+        : await coursesCollection.findOne({ semester: semesterName });
     res.send(result);
 })
 
