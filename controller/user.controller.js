@@ -4,24 +4,9 @@ const jwt = require('jsonwebtoken');
 
 const { getDb } = require('../utils/dbConnect');
 
-
-const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.kke0c.mongodb.net/?retryWrites=true&w=majority`;
-
-const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverApi: ServerApiVersion.v1
-});
-
-
-const eventsCollection = client.db("section-N").collection("events");
-const coursesCollection = client.db("section-N").collection("courses");
-const studentsCollection = client.db("section-N").collection("students");
-const infoCollection = client.db("section-N").collection("info");
-const memesCollection = client.db("section-N").collection("memes");
-
 const db = getDb();
 const userCollection = db?.collection("users")
+const studentsCollection = db?.collection("students")
 
 
 module.exports.getUser = async (req, res) => {
@@ -35,7 +20,6 @@ module.exports.getUser = async (req, res) => {
             message: error.message
         })
     }
-
 }
 
 
@@ -62,24 +46,26 @@ module.exports.assignUser = async (req, res) => {
 
 module.exports.updateUser = async (req, res) => {
     try {
-        const user = req.body;
-        delete user?._id
-        const id = req.params.id;
+        const userData = req.body;
+        delete userData?._id
+        const _id = req.params.id;
         const studentId = req.params.studentId;
         const verification = req.params.verification;
         const updateDoc = {
-            $set: user
+            $set: userData
         }
 
-        const updateUser = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+        const updateUser = await userCollection.updateOne({ _id: ObjectId(_id) }, updateDoc, { upsert: true });
 
         if (updateUser.modifiedCount > 0 && verification === "verified") {
+
             const result = await studentsCollection.updateOne({ id: studentId }, {
                 $set: {
-                    userData: user
+                    userData: userData
                 }
 
             }, { upsert: true });
+            console.log(result);
             return res.send(result)
         }
         else {
