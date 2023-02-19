@@ -46,10 +46,10 @@ module.exports.assignUser = async (req, res) => {
 
 module.exports.updateUser = async (req, res) => {
     try {
-        const userData = req.body;
-        delete userData?._id
         const _id = req.params.id;
         const studentId = req.params.studentId;
+        const userData = req.body;
+        delete userData?._id
         const verification = req.params.verification;
         const updateDoc = {
             $set: userData
@@ -58,14 +58,19 @@ module.exports.updateUser = async (req, res) => {
         const updateUser = await userCollection.updateOne({ _id: ObjectId(_id) }, updateDoc, { upsert: true });
 
         if (updateUser.modifiedCount > 0 && verification === "verified") {
-
+            const student = await studentsCollection.findOne({ id: studentId });
+            if (student?.userData) {
+                for (var prop in userData) {
+                    student.userData[prop] = userData[prop]
+                }
+            }
             const result = await studentsCollection.updateOne({ id: studentId }, {
                 $set: {
-                    userData: userData
-                }
+                    userData: student.userData,
+                    ...(userData.id) && { id: userData.id },
+                },
 
-            }, { upsert: true });
-            console.log(result);
+            })
             return res.send(result)
         }
         else {
