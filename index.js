@@ -59,38 +59,6 @@ app.use('/events', eventRoutes)
 // /courses
 app.use('/courses', courseRoutes)
 
-app.put('/verification/approve/:id', async (req, res) => {
-    const id = req.params.id;
-    const updateDoc = {
-        $set: {
-            verification: "verified"
-        }
-    }
-    const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
-    if (result.modifiedCount > 0) {
-        const user = await userCollection.findOne({ _id: ObjectId(id), verification: "verified" });
-        const updateStudent = {
-            $set: {
-                userData: user
-            }
-        }
-        const update = await studentsCollection.updateOne({ id: user.id }, updateStudent, { upsert: true })
-        res.send(update);
-    }
-})
-
-app.put('/verification/delete/:id', async (req, res) => {
-    const id = req.params.id;
-    const updateDoc = {
-        $set: {
-            verification: "unverified"
-        }
-    }
-    const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
-    res.send(result)
-})
-
-
 // memes
 
 app.post('/memes', async (req, res) => {

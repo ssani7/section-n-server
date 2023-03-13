@@ -156,11 +156,11 @@ module.exports.verifyReqList = async (req, res) => {
     }
 }
 
-module.exports.getVerification = async (req, res) => {
+module.exports.verifyRequest = async (req, res) => {
     try {
         const userId = req.query.id;
         const userEmail = req.query.email;
-        const idHolder = await studentsCollection.findOne({ id: userId });
+        const validStID = await studentsCollection.findOne({ id: userId });
         const existingUser = await userCollection.find({ id: userId, verification: "verified" }).toArray();
         const updateDoc = {
             $set: {
@@ -168,10 +168,9 @@ module.exports.getVerification = async (req, res) => {
                 id: userId
             }
         }
-        if (idHolder) {
-            if (existingUser.length > 0) {
-                res.send(existingUser);
-            }
+        if (validStID) {
+            if (existingUser.length > 0) return res.send(existingUser);
+
             else {
                 const reqVerification = await userCollection.updateOne({ email: userEmail }, updateDoc, { upsert: true });
                 res.send(reqVerification);
@@ -186,21 +185,40 @@ module.exports.getVerification = async (req, res) => {
 }
 
 module.exports.approveVerification = async (req, res) => {
-    const id = req.params.id;
-    const updateDoc = {
-        $set: {
-            verification: "verified"
-        }
-    }
-    const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
-    if (result.modifiedCount > 0) {
-        const user = await userCollection.findOne({ _id: ObjectId(id), verification: "verified" });
-        const updateStudent = {
+    try {
+        const id = req.params.id;
+        const updateDoc = {
             $set: {
-                userData: user
+                verification: "verified"
             }
         }
-        const update = await studentsCollection.updateOne({ id: user.id }, updateStudent, { upsert: true })
-        res.send(update);
+        const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+        if (result.modifiedCount > 0) {
+            const user = await userCollection.findOne({ _id: ObjectId(id), verification: "verified" });
+            const updateStudent = {
+                $set: {
+                    userData: user
+                }
+            }
+            const update = await studentsCollection.updateOne({ id: user.id }, updateStudent, { upsert: true })
+            res.send(update);
+        }
+    } catch (error) {
+        res.send(error)
+    }
+
+}
+module.exports.rejectVerification = async (req, res) => {
+    try {
+        const id = req.params.id;
+        const updateDoc = {
+            $set: {
+                verification: "unverified"
+            }
+        }
+        const result = await userCollection.updateOne({ _id: ObjectId(id) }, updateDoc, { upsert: true });
+        res.send(result)
+    } catch (error) {
+        res.send(error)
     }
 }

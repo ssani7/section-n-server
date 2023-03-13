@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUser, assignUser, updateUser, deleteUser, getUserRole, getAllStudents, updatePortfolio, verifyReqList, getVerification } = require('../controller/user.controller');
+const { getUser, assignUser, updateUser, deleteUser, getUserRole, getAllStudents, updatePortfolio, verifyReqList, verifyRequest, approveVerification, rejectVerification } = require('../controller/user.controller');
 
 const router = express.Router();
 
@@ -13,8 +13,10 @@ router
     .post('/portfolio/update', updatePortfolio)
 
 router
-    .get('/verifyReq', verifyReqList)
-    .put('/verify', getVerification)
+    .get('/verificationList', verifyReqList)
+    .put('/verify', verifyRequest)
+    .put('/verification/approve/:id', approveVerification)
+    .put('/verification/reject/:id', rejectVerification)
 
 router
     .get('/:email', getUser)
