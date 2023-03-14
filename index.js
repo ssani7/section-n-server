@@ -17,6 +17,7 @@ const courseRoutes = require('./routes/course.route')
 // middleware
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }))
 
 // mongodb
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.kke0c.mongodb.net/?retryWrites=true&w=majority`;
@@ -71,3 +72,13 @@ app.post('/memes', async (req, res) => {
 app.get('/', (req, res) => {
     res.send('Section n server running')
 })
+
+
+
+
+// gdrive 
+
+const { google } = require('googleapis')
+
+const gdriveRoutes = require("./routes/gdrive.route")
+app.use(gdriveRoutes)
