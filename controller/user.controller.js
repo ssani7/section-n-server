@@ -117,6 +117,16 @@ module.exports.getAllStudents = async (req, res) => {
     }
 }
 
+module.exports.getStudent = async ( req,res)=>{
+    try {
+        console.log(req.params.id);
+        const result = await studentsCollection.findOne({id:req.params.id});
+        res.send(result);
+    } catch (error) {
+        res.send(error)
+    }
+}
+
 // ****** needs optimization ****
 module.exports.updatePortfolio = async (req, res) => {
     const portfolio = req.body;

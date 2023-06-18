@@ -8,77 +8,66 @@ const { connectToServer } = require('./utils/dbConnect');
 require('dotenv').config();
 const port = process.env.PORT || 5000;
 
-const userRoutes = require('./routes/user.route')
-const eventRoutes = require('./routes/events.route')
-const achievementRoutes = require('./routes/achievement.route')
-const infoRoutes = require('./routes/info.route')
-const courseRoutes = require('./routes/course.route')
+const userRoutes = require('./routes/user.route');
+const eventRoutes = require('./routes/events.route');
+const achievementRoutes = require('./routes/achievement.route');
+const infoRoutes = require('./routes/info.route');
+const courseRoutes = require('./routes/course.route');
 
 // middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.urlencoded({ extended: true }))
+app.use(express.urlencoded({ extended: true }));
 
 // mongodb
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.kke0c.mongodb.net/?retryWrites=true&w=majority`;
 const client = new MongoClient(uri, {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-    serverApi: ServerApiVersion.v1
+	useNewUrlParser: true,
+	useUnifiedTopology: true,
+	serverApi: ServerApiVersion.v1,
 });
 
 connectToServer((err) => {
-    if (!err) {
-        app.listen(port, () => {
-            console.log(`Listening to port ${port}`);
-        })
-    }
-    else {
-        console.log(err);
-    }
-})
+	if (!err) {
+		app.listen(port, () => {
+			console.log(`Listening to port ${port}`);
+		});
+	} else {
+		console.log(err);
+	}
+});
 
-const userCollection = client.db("section-N").collection("users");
-const startsCollection = client.db("section-N").collection("stars");
-const eventsCollection = client.db("section-N").collection("events");
-const coursesCollection = client.db("section-N").collection("courses");
-const studentsCollection = client.db("section-N").collection("students");
-const memesCollection = client.db("section-N").collection("memes");
+const memesCollection = client.db('section-N').collection('memes');
 
 // /user
-app.use('/user', userRoutes)
+app.use('/user', userRoutes);
 
 // /routine
-app.use('/routine', infoRoutes)
+app.use('/routine', infoRoutes);
 
 // students
-app.use('/achievements', achievementRoutes)
+app.use('/achievements', achievementRoutes);
 
 // /events
-app.use('/events', eventRoutes)
+app.use('/events', eventRoutes);
 
 // /courses
-app.use('/courses', courseRoutes)
+app.use('/courses', courseRoutes);
 
 // memes
 
 app.post('/memes', async (req, res) => {
-    const meme = req.body;
-    const result = await memesCollection.insertOne(meme);
-    res.send(result);
-})
-
+	const meme = req.body;
+	const result = await memesCollection.insertOne(meme);
+	res.send(result);
+});
 
 app.get('/', (req, res) => {
-    res.send('Section n server running')
-})
+	res.send('Section n server running');
+});
 
+// gdrive
 
+const gdriveRoutes = require('./routes/gdrive.route');
 
-
-// gdrive 
-
-const { google } = require('googleapis')
-
-const gdriveRoutes = require("./routes/gdrive.route")
-app.use(gdriveRoutes)
+app.use(gdriveRoutes);

@@ -1,5 +1,5 @@
 const express = require('express');
-const { getUser, assignUser, updateUser, deleteUser, getUserRole, getAllStudents, updatePortfolio, verifyReqList, verifyRequest, approveVerification, rejectVerification } = require('../controller/user.controller');
+const { getUser, assignUser, updateUser, deleteUser, getUserRole, getAllStudents, updatePortfolio, verifyReqList, verifyRequest, approveVerification, rejectVerification, getStudent } = require('../controller/user.controller');
 
 const router = express.Router();
 
@@ -10,6 +10,7 @@ router
 
 router
     .get('/students', getAllStudents)
+    .get('/student/:id', getStudent)
     .post('/portfolio/update', updatePortfolio)
 
 router
