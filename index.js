@@ -63,7 +63,7 @@ app.post('/memes', async (req, res) => {
 });
 
 app.get('/', (req, res) => {
-	res.send('Section n server running');
+	res.send('Section n server is running');
 });
 
 // gdrive
