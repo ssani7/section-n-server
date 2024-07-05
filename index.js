@@ -13,6 +13,7 @@ const eventRoutes = require('./routes/events.route');
 const achievementRoutes = require('./routes/achievement.route');
 const infoRoutes = require('./routes/info.route');
 const courseRoutes = require('./routes/course.route');
+const hafizRoute = require('./routes/hafiz.route');
 
 // middleware
 app.use(cors());
@@ -53,6 +54,9 @@ app.use('/events', eventRoutes);
 
 // /courses
 app.use('/courses', courseRoutes);
+
+// ** hafiz covercrafter
+app.use('/hafiz-flow', hafizRoute);
 
 // memes
 
