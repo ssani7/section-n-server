@@ -99,7 +99,7 @@ const uniData = [
 
 module.exports.getUniData = async (req, res) => {
 	try {
-		res.send({ data: JSON.stringify(uniData) });
+		res.send(JSON.stringify({ data: uniData }));
 	} catch (error) {
 		console.log(error);
 		res.status(400).send({
